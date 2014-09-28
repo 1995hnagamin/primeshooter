@@ -63,7 +63,7 @@ class PrimeProcessor < BulletProcessor
       enemies[0, 0] = Enemy.new(prime, newp)
     end
     
-    used ? prime : -prime
+    used ? prime : -prime * prime
   end
 end
 

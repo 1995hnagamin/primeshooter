@@ -35,6 +35,7 @@ class Game
   end
 
   def step
+    return nil if game_over?
     @gun.step
     d = @enemies.step
     @life.damage d

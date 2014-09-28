@@ -40,7 +40,7 @@ class Gun
 
   def step
     if not available?
-      @bullet = 0 if @standby == 1
+      @bullet.value = 0 if @standby == 1
       @standby -= 1
     end
   end
