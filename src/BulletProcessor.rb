@@ -43,6 +43,7 @@ Enemies.add_processor DefaultProcessor.new(0)
 
 class PrimeProcessor < BulletProcessor
   def processes?(bullet)
+    $err << bullet if not bullet
     prime? bullet
   end
 

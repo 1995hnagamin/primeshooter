@@ -29,9 +29,10 @@ class Game
   end
   
   def shoot
-    b = @gun.shoot
-    p = @enemies.process_bullet b
-    @score += p
+    if b = @gun.shoot and not b.nil?
+      p = @enemies.process_bullet b
+      @score += p
+    end
   end
 
   def step

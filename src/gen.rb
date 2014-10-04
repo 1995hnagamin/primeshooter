@@ -62,3 +62,4 @@ def reduce(n)
   a
 end
 
+$err = []

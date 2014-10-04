@@ -18,7 +18,7 @@ class Gun
     if available?
       b = @bullet.value
       @bullet.value = 0
-      b
+      b != 0 ? b : nil
     end
   end
 

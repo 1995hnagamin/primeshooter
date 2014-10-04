@@ -32,19 +32,19 @@ env = {gun_width: 3,
 
 g = Game.new env
 
-include Curses
-init_screen
-cbreak
-noecho
-curs_set 0
-
-def putcs(string)  
-  setpos lines - 1, 0
-  addstr string
-  refresh
-end
-
 begin
+  include Curses
+  init_screen
+  cbreak
+  noecho
+  curs_set 0
+
+  def putcs(string)  
+    setpos lines - 1, 0
+    addstr string
+    refresh
+  end
+
   step = Timer.new(100)
   Curses::timeout = 10
 
@@ -73,3 +73,5 @@ ensure
   getch
   close_screen
 end
+
+STDOUT.puts $err
