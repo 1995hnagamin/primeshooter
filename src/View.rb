@@ -15,8 +15,7 @@ class GunView
   end
 
   def update_bullet
-    orderfixed = OrderFixed.new(@gun.bullet, @width)
-    @view = orderfixed.to_s("_")
+    @view = fix_width(@gun.bullet, @width, "_")
   end
 
   def update_status
@@ -77,7 +76,7 @@ class EnemiesView
   end
 
   def create_view
-    update_view
+    update_enemies
   end
 
   def update_enemies
@@ -100,25 +99,31 @@ class EnemiesView
 end
 
 
+require 'curses'
+
 class MainView
   include Curses
 
-  def initialize(controller, game)
+  def initialize(controller, game, env)
     @controller = controller
     @game = game
-    @on = true
+    @env = env
   end
 
   def create_view
     gun_controller = GunController.new(@game.gun)
     @gun_view = GunView.new(gun_controller, @game.gun)
     @life_view = LifeView.new(@game.life)
-    @enemies_view = EnemiesView.new(@game.enemies)
+    @enemies_view = EnemiesView.new(@game.enemies, @env[:field_width])
     init_screen
     cbreak
     noecho
     curs_set 0
     Curses::timeout = 10
+
+    @gun_view.create_view
+    @life_view.create_view
+    @enemies_view.create_view
 
     render to_s
   end
@@ -138,7 +143,7 @@ class MainView
     when /z|Z/
       @gun_view.shoot_bullet
     when /\d/
-      @gun_view.insert_bullet
+      @gun_view.insert_bullet char.to_i
     when /q|Q/
       close
     else
@@ -146,7 +151,7 @@ class MainView
   end
 
   def close
-    @on = false
+    @controller.close
 
     clear
     Curses::timeout = -1
@@ -155,8 +160,8 @@ class MainView
 
   def execute
     begin
-      init_view
-      while @on
+      create_view
+      until @game.game_over?
         char = getch
         input char
         render to_s

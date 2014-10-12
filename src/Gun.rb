@@ -2,7 +2,7 @@ class Gun
   def initialize(width)
     @bullet = 0
     @standby = 0
-    @mod = 10 * (width - 1)
+    @mod = 10 ** width
     @broken = false
     @observers = []
   end
@@ -16,11 +16,19 @@ class Gun
 
   def shoot
     if available?
-      b = @bullet.value
-      @bullet.value = 0
+      b = @bullet
+      @bullet = 0
       b != 0 ? b : nil
     end
     update_bullet
+  end
+
+  def maximum
+    @mod - 1
+  end
+  
+  def bullet
+    @bullet
   end
 
   def disable(turns = 2)
@@ -28,15 +36,15 @@ class Gun
   end
 
   def available?
-    @standby == 0 and !broken
+    @standby == 0 and !@broken
   end
 
   def inavailable?
-    !available? and !broken
+    !available? and !@broken
   end
 
   def broken?
-    broken
+    @broken
   end
 
   def break

@@ -120,7 +120,6 @@ class Enemies
     v = value || make_composite( rand(1..@max_size) )
     p = right_edge + keta(v) + position
     Enemy.new(v, p)
-    update
   end
 
   def destroy(enemy)
@@ -140,13 +139,15 @@ class Enemies
   end
 
   def process_bullet(bullet)
+    point = 0
     @@processors.each do |p|
       if p.processes? bullet
         point = p.process_maybe(bullet, self)
-        return point
+        break
       end
     end
     update
+    point
   end
 
   def each(&block)

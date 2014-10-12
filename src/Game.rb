@@ -1,4 +1,5 @@
 class Game
+  attr_reader :gun, :life, :enemies
   def initialize(env)
     @gun = Gun.new(env[:gun_width])
     @life = Life.new(env[:life], env[:life_width])
@@ -7,32 +8,7 @@ class Game
     @enemies.init_stage
 
     @score = 0
-  end
-
-  def render
-    gun_status + @life.to_s + @enemies.to_s
-  end
-
-  def gun_status
-    if game_over?
-      @gun.broken
-    elsif not @gun.available?
-      @gun.repeat("#")
-    else
-      @gun.to_s
-    end
-  end
-
-  def input(str)
-    n = str.to_i
-    @gun.insert_bullet n if 0 <= n and n < 10
-  end
-  
-  def shoot
-    if b = @gun.shoot and not b.nil?
-      p = @enemies.process_bullet b
-      @score += p
-    end
+    @terminated = false
   end
 
   def step
@@ -44,8 +20,12 @@ class Game
     @enemies.create_enemy
   end
 
+  def terminate
+    @terminated = true
+  end
+
   def game_over?
-    @life.dead?
+    @life.dead? or @terminated
   end
 
   def message

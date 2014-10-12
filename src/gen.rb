@@ -36,6 +36,15 @@ def prime?(n)
   end
 end
 
+def fix_width(num, width, char)
+  if num == 0
+    char * width
+  else
+    num %= 10 ** width
+    char * (width - keta(num)) + num.to_s
+  end
+end
+
 
 def keta(n)
   n.to_s.length
@@ -43,7 +52,7 @@ end
 
 
 def make_composite(n)
-  primes = (1..100).select {|n| prime? n}
+  primes = (1..100).select {|x| prime? x}
   primes.sample(n).inject(:*)
 end
 

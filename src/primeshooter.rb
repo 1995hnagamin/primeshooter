@@ -6,7 +6,6 @@ require './BulletProcessor.rb'
 require './Game.rb'
 require './View.rb'
 require './Controller.rb'
-require 'curses'
 
 env = {gun_width: 3,
        life: 100,
@@ -16,8 +15,8 @@ env = {gun_width: 3,
        max_enemy_amount: 10}
 
 game = Game.new env
-controller = MainController.new(game)
+controller = MainController.new(game, env)
 
 controller.execute
 
-STDOUT.puts $err
+#STDOUT.puts $err

@@ -1,23 +1,24 @@
 class Life
-  def initialize(current, order)
-    @life = OrderFixed.new current, order
-  end
+  attr_reader :maximum, :life
 
-  def to_s
-    "[#{@life.to_s}%]"
+  def initialize(maximum, width)
+    @life = maximum
+    @maximum = maximum
+    @width = width
+    @observers = []
   end
 
   def damage(d)
-    if @life.value > d
-      @life.value -= d
+    if @life > d
+      @life -= d
     else
       @last = d
-      @life.value = 0
+      @life = 0
     end
   end
 
   def dead?
-    @life.value <= 0
+    @life <= 0
   end
 
   def report

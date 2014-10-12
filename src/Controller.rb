@@ -15,17 +15,22 @@ class GunController
 end
 
 class MainController
-  def initialize(game)
+  def initialize(game, env)
     @game = game
     @gun = game.gun
     @enemies = game.enemies
     @life = game.life
-    @view = MainController.new(self, game)
+    @view = MainView.new(self, game, env)
+  end
+
+  def execute
+    @view.execute
   end
 
   def shoot
   end
 
   def close
+    @game.terminate
   end
 end
