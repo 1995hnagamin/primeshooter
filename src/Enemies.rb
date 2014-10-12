@@ -6,14 +6,6 @@ class Enemy
     @pos = position
   end
 
-  def to_s
-    if does_reach?
-      (@value % (10 ** pos)).to_s
-    else
-      @value.to_s
-    end
-  end
-
   def right_edge
     pos - keta(@value)
   end
@@ -44,6 +36,7 @@ end
 
 class Enemies
   include Enumerable
+  include GunObserver
   @@processors = []
 
   def self.add_processor(processor)
@@ -58,24 +51,7 @@ class Enemies
     @width = width
     @max_amount = max_amount
     @enemies = []
-  end
-
-  def to_s
-    ret = ""
-    @enemies.each do |e|
-      expr = e.to_s
-      padding_size = e.pos - expr.length - ret.length
-      padding = "_" * (padding_size > 0 ? padding_size : 0)
-      ret += padding + expr
-    end
-
-    if ret.length < @width
-      ret + "_" * (@width - ret.length)
-    elsif ret.length > @width
-      ret[0,@width]
-    else
-      ret
-    end
+    @observers = []
   end
 
   def [](idx)
@@ -88,6 +64,22 @@ class Enemies
 
   def []=(k, k2, v)
     @enemies[k, k2] = v
+  end
+
+  def register_observer(observer)
+    @observers << observer
+  end
+
+  def notify
+    @observers.each do |o|
+      o.update_enemy_status(self)
+    end
+  end
+
+  def notify_destroyed(point)
+    @observers.each do |o|
+      o.update_enemy_destroyed(point)
+    end
   end
 
   def init_stage
@@ -122,6 +114,7 @@ class Enemies
     if @enemies.size < @max_amount
       @enemies << bear_enemy(rand(1..3))
     end
+    notify
   end
 
   def create_many_enemies
@@ -138,6 +131,7 @@ class Enemies
 
   def destroy(enemy)
     @enemies.delete enemy
+    notify
   end
 
   def step
@@ -152,15 +146,33 @@ class Enemies
   end
 
   def process_bullet(bullet)
+    point = 0
     @@processors.each do |p|
       if p.processes? bullet
         point = p.process_maybe(bullet, self)
-        return point
+        break
       end
     end
+    notify
+    notify_destroyed(point)
   end
 
   def each(&block)
     @enemies.each &block
+  end
+
+  def update_shoot(bullet)
+    process_bullet bullet
+  end
+end
+
+module EnemiesObserver
+  def update_enemy_ingression(enemy)
+  end
+
+  def update_enemy_status(enemies)
+  end
+
+  def update_enemy_destroyed(point)
   end
 end

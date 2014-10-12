@@ -1,34 +1,48 @@
 class Life
-  def initialize(current, order)
-    @life = OrderFixed.new current, order
-  end
+  attr_reader :maximum, :life
 
-  def to_s
-    "[#{@life.to_s}%]"
+  def initialize(maximum, width)
+    @life = maximum
+    @maximum = maximum
+    @width = width
+    @observers = []
   end
 
   def damage(d)
-    if @life.value > d
-      @life.value -= d
+    if @life > d
+      @life -= d
     else
-      @last = d
-      @life.value = 0
+      @life = 0
+      notify_dead d
     end
+    notify
   end
 
   def dead?
-    @life.value <= 0
+    @life <= 0
   end
 
-  def report
-    return "" unless @last
+  def register_observer(observer)
+    @observers << observer
+  end
 
-    ps = reduce @last
-    if ps.size > 1
-      "#{@last} = " + ps.join("*") + "."
-    else
-      "#{ps[0]} is prime."
+  def notify
+    @observers.each do |o|
+      o.update_life
+    end
+  end
+
+  def notify_dead(damage)
+    @observers.each do |o|
+      o.update_life_dead(damage)
     end
   end
 end
 
+module LifeObserver
+  def update_life
+  end
+
+  def update_life_dead(damage)
+  end
+end

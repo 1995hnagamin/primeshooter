@@ -1,47 +1,89 @@
 class Gun
   def initialize(width)
-    @bullet = OrderFixed.new(0, width)
+    @bullet = 0
     @standby = 0
-  end
-
-  def to_s
-    @bullet.to_s_positive("_")
+    @mod = 10 ** width
+    @broken = false
+    @observers = []
   end
 
   def insert_bullet(n)
     if available?
-      @bullet.value = @bullet.value * 10 + n
+      @bullet = (@bullet * 10 + n) % @mod
     end
+    update_status
   end
 
   def shoot
     if available?
-      b = @bullet.value
-      @bullet.value = 0
-      b != 0 ? b : nil
+      b = @bullet
+      @bullet = 0
+      update_shoot(b) if b > 0
     end
+    update_status
   end
 
-  def broken
-    repeat("*")
+  def maximum
+    @mod - 1
   end
-
-  def repeat(c)
-    @bullet.repeat(c)
+  
+  def bullet
+    @bullet
   end
 
   def disable(turns = 2)
     @standby = turns
+    update_status
   end
 
   def available?
-    @standby == 0
+    @standby == 0 and !@broken
+  end
+
+  def inavailable?
+    !available? and !@broken
+  end
+
+  def broken?
+    @broken
+  end
+
+  def break
+    @broken = true
   end
 
   def step
     if not available?
       @standby -= 1
-      @bullet.value = 0 if available?
+      if available?
+        @bullet = 0
+        update_status
+      end
     end
+  end
+
+  def register_observer(observer)
+    @observers << observer
+  end
+
+  def update_status
+    @observers.each do |o|
+      o.update_status
+    end
+  end
+
+  def update_shoot(bullet)
+    @observers.each do |o|
+      o.update_shoot(bullet)
+    end
+  end
+end
+
+module GunObserver
+
+  def update_status
+  end
+
+  def update_shoot(bullet)
   end
 end
