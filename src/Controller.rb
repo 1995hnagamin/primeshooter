@@ -1,7 +1,7 @@
 class GunController
   def initialize(gun)
     @gun = gun
-    @view = GunView.new(this, gun)
+    @view = GunView.new(self, gun)
     @view.create_view
   end
 
@@ -14,3 +14,18 @@ class GunController
   end
 end
 
+class MainController
+  def initialize(game)
+    @game = game
+    @gun = game.gun
+    @enemies = game.enemies
+    @life = game.life
+    @view = MainController.new(self, game)
+  end
+
+  def shoot
+  end
+
+  def close
+  end
+end

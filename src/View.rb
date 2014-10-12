@@ -99,3 +99,70 @@ class EnemiesView
   end
 end
 
+
+class MainView
+  include Curses
+
+  def initialize(controller, game)
+    @controller = controller
+    @game = game
+    @on = true
+  end
+
+  def create_view
+    gun_controller = GunController.new(@game.gun)
+    @gun_view = GunView.new(gun_controller, @game.gun)
+    @life_view = LifeView.new(@game.life)
+    @enemies_view = EnemiesView.new(@game.enemies)
+    init_screen
+    cbreak
+    noecho
+    curs_set 0
+    Curses::timeout = 10
+
+    render to_s
+  end
+
+  def render(string)
+    setpos lines - 1, 0
+    addstr string
+    refresh
+  end
+
+  def to_s
+    @gun_view.to_s + @life_view.to_s + @enemies.to_s
+  end
+
+  def input(char)
+    case char
+    when /z|Z/
+      @gun_view.shoot_bullet
+    when /\d/
+      @gun_view.insert_bullet
+    when /q|Q/
+      close
+    else
+    end
+  end
+
+  def close
+    @on = false
+
+    clear
+    Curses::timeout = -1
+    close_screen
+  end
+
+  def execute
+    begin
+      init_view
+      while @on
+        char = getch
+        input char
+        render to_s
+      end
+    ensure
+      close
+    end
+  end
+end
