@@ -36,6 +36,7 @@ end
 
 class Enemies
   include Enumerable
+  include GunObserver
   @@processors = []
 
   def self.add_processor(processor)
@@ -152,5 +153,9 @@ class Enemies
 
   def each(&block)
     @enemies.each &block
+  end
+
+  def update_shoot(bullet)
+    process_bullet bullet
   end
 end

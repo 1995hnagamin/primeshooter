@@ -7,6 +7,8 @@ class Game
                           env[:max_enemy_amount])
     @enemies.init_stage
 
+    @gun.register_observer @enemies
+
     @score = 0
     @terminated = false
   end
@@ -26,9 +28,5 @@ class Game
 
   def game_over?
     @life.dead? or @terminated
-  end
-
-  def message
-    @life.report + " score: " + @score.to_s
   end
 end

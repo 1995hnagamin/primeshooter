@@ -18,7 +18,7 @@ class Gun
     if available?
       b = @bullet
       @bullet = 0
-      b != 0 ? b : nil
+      update_shoot(b) if b > 0
     end
     update_bullet
   end
@@ -75,5 +75,22 @@ class Gun
     @observers.each do |o|
       o.update_status
     end
+  end
+
+  def update_shoot(bullet)
+    @observers.each do |o|
+      o.update_shoot(bullet)
+    end
+  end
+end
+
+module GunObserver
+  def update_bullet
+  end
+
+  def update_status
+  end
+
+  def update_shoot(bullet)
   end
 end

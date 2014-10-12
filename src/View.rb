@@ -1,4 +1,6 @@
 class GunView
+  include GunObserver
+
   def initialize(controller, gun)
     @controller = controller
     @gun = gun
@@ -89,12 +91,14 @@ class EnemiesView
     end
 
     if ret.length < @width
-      ret + "_" * (@width - ret.length)
+      @view = ret + "_" * (@width - ret.length)
     elsif ret.length > @width
-      ret[0, @width]
+      @view = ret[0, @width]
     else
-      ret
+      @view = ret
     end
+
+    @view
   end
 end
 
@@ -114,7 +118,7 @@ class MainView
     gun_controller = GunController.new(@game.gun)
     @gun_view = GunView.new(gun_controller, @game.gun)
     @life_view = LifeView.new(@game.life)
-    @enemies_view = EnemiesView.new(@game.enemies, @env[:field_width])
+    @enemies_view = EnemiesView.new(@game.enemies, 25)
     init_screen
     cbreak
     noecho
@@ -135,7 +139,7 @@ class MainView
   end
 
   def to_s
-    @gun_view.to_s + @life_view.to_s + @enemies.to_s
+    @gun_view.to_s + @life_view.to_s + @enemies_view.to_s
   end
 
   def input(char)
@@ -146,7 +150,8 @@ class MainView
       @gun_view.insert_bullet char.to_i
     when /q|Q/
       close
-    else
+    when /p|P/
+      @game.step
     end
   end
 

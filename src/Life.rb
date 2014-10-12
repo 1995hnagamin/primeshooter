@@ -15,31 +15,20 @@ class Life
       @last = d
       @life = 0
     end
+    update
   end
 
   def dead?
     @life <= 0
   end
 
-  def report
-    return "" unless @last
-
-    ps = reduce @last
-    if ps.size > 1
-      "#{@last} = " + ps.join("*") + "."
-    else
-      "#{ps[0]} is prime."
-    end
-  end
-
   def register_observer(observer)
     @observers << observer
   end
 
-  def update_observers
+  def update
     @observers.each do |o|
       o.update_life
     end
   end
 end
-

@@ -1,6 +1,6 @@
 require './gen.rb'
-require './Enemies.rb'
 require './Gun.rb'
+require './Enemies.rb'
 require './Life.rb'
 require './BulletProcessor.rb'
 require './Game.rb'
