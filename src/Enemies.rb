@@ -6,14 +6,6 @@ class Enemy
     @pos = position
   end
 
-  def to_s
-    if does_reach?
-      (@value % (10 ** pos)).to_s
-    else
-      @value.to_s
-    end
-  end
-
   def right_edge
     pos - keta(@value)
   end
@@ -58,24 +50,7 @@ class Enemies
     @width = width
     @max_amount = max_amount
     @enemies = []
-  end
-
-  def to_s
-    ret = ""
-    @enemies.each do |e|
-      expr = e.to_s
-      padding_size = e.pos - expr.length - ret.length
-      padding = "_" * (padding_size > 0 ? padding_size : 0)
-      ret += padding + expr
-    end
-
-    if ret.length < @width
-      ret + "_" * (@width - ret.length)
-    elsif ret.length > @width
-      ret[0,@width]
-    else
-      ret
-    end
+    @observers = []
   end
 
   def [](idx)
@@ -88,6 +63,16 @@ class Enemies
 
   def []=(k, k2, v)
     @enemies[k, k2] = v
+  end
+
+  def register_observer(observer)
+    @observers << observer
+  end
+
+  def update
+    @observers.each do |o|
+      o.update_enemies
+    end
   end
 
   def init_stage
@@ -122,6 +107,7 @@ class Enemies
     if @enemies.size < @max_amount
       @enemies << bear_enemy(rand(1..3))
     end
+    update
   end
 
   def create_many_enemies
@@ -134,10 +120,12 @@ class Enemies
     v = value || make_composite( rand(1..@max_size) )
     p = right_edge + keta(v) + position
     Enemy.new(v, p)
+    update
   end
 
   def destroy(enemy)
     @enemies.delete enemy
+    update
   end
 
   def step
@@ -158,6 +146,7 @@ class Enemies
         return point
       end
     end
+    update
   end
 
   def each(&block)

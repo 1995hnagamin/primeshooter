@@ -1,17 +1,17 @@
 class Gun
   def initialize(width)
-    @bullet = OrderFixed.new(0, width)
+    @bullet = 0
     @standby = 0
-  end
-
-  def to_s
-    @bullet.to_s_positive("_")
+    @mod = 10 * (width - 1)
+    @broken = false
+    @observers = []
   end
 
   def insert_bullet(n)
     if available?
-      @bullet.value = @bullet.value * 10 + n
+      @bullet = (@bullet * 10 + n) % @mod
     end
+    update_bullet
   end
 
   def shoot
@@ -20,14 +20,7 @@ class Gun
       @bullet.value = 0
       b != 0 ? b : nil
     end
-  end
-
-  def broken
-    repeat("*")
-  end
-
-  def repeat(c)
-    @bullet.repeat(c)
+    update_bullet
   end
 
   def disable(turns = 2)
@@ -35,13 +28,44 @@ class Gun
   end
 
   def available?
-    @standby == 0
+    @standby == 0 and !broken
+  end
+
+  def inavailable?
+    !available? and !broken
+  end
+
+  def broken?
+    broken
+  end
+
+  def break
+    @broken = true
   end
 
   def step
     if not available?
       @standby -= 1
-      @bullet.value = 0 if available?
+      if available?
+        @bullet = 0
+        update_status
+      end
+    end
+  end
+
+  def register_observer(observer)
+    @observers << observer
+  end
+
+  def update_bullet
+    @observers.each do |o|
+      o.update_bullet
+    end
+  end
+
+  def update_status
+    @observers.each do |o|
+      o.update_status
     end
   end
 end

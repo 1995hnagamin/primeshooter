@@ -2,7 +2,7 @@ class GunView
   def initialize(controller, gun)
     @controller = controller
     @gun = gun
-    @gun.registerObserver(self)
+    @gun.register_observer(self)
     @width = keta(@gun.maximum)
   end
 
@@ -21,9 +21,9 @@ class GunView
 
   def update_status
     if @gun.inavailable?
-      @view = "#" * 3
+      @view = "#" * @width
     elsif @gun.broken?
-      @view = "*" * 3
+      @view = "*" * @width
     elsif @gun.available?
       update_bullet
     end
@@ -69,6 +69,7 @@ class EnemiesView
   def initialize(enemies, width)
     @enemies = enemies
     @width = width
+    @enemies.register_observer(self)
   end
 
   def to_s
@@ -79,7 +80,7 @@ class EnemiesView
     update_view
   end
 
-  def update_view
+  def update_enemies
     ret = ""
     @enemies.each do |e|
       expr = e.value.to_s

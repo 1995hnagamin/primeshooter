@@ -30,5 +30,15 @@ class Life
       "#{ps[0]} is prime."
     end
   end
+
+  def register_observer(observer)
+    @observers << observer
+  end
+
+  def update_observers
+    @observers.each do |o|
+      o.update_life
+    end
+  end
 end
 
