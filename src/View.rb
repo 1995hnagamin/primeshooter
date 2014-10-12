@@ -16,17 +16,13 @@ class GunView
     @view = "_" * @width
   end
 
-  def update_bullet
-    @view = fix_width(@gun.bullet, @width, "_")
-  end
-
   def update_status
     if @gun.inavailable?
       @view = "#" * @width
     elsif @gun.broken?
       @view = "*" * @width
     elsif @gun.available?
-      update_bullet
+      @view = fix_width @gun.bullet, @width, "_"
     end
   end
 
@@ -41,6 +37,8 @@ end
 
 
 class LifeView
+  include LifeObserver
+
   def initialize(life)
     @life = life
     @life.register_observer(self)
@@ -67,6 +65,8 @@ end
 
 
 class EnemiesView
+  include EnemiesObserver
+
   def initialize(enemies, width)
     @enemies = enemies
     @width = width
@@ -78,12 +78,12 @@ class EnemiesView
   end
 
   def create_view
-    update_enemies
+    update_enemy_status(@enemies)
   end
 
-  def update_enemies
+  def update_enemy_status(enemies)
     ret = ""
-    @enemies.each do |e|
+    enemies.each do |e|
       expr = e.value.to_s
       padding_size = e.pos - expr.length - ret.length
       padding = "_" * (padding_size > 0 ? padding_size : 0)
@@ -118,7 +118,7 @@ class MainView
     gun_controller = GunController.new(@game.gun)
     @gun_view = GunView.new(gun_controller, @game.gun)
     @life_view = LifeView.new(@game.life)
-    @enemies_view = EnemiesView.new(@game.enemies, 25)
+    @enemies_view = EnemiesView.new(@game.enemies, @env[:field_width])
     init_screen
     cbreak
     noecho
@@ -151,7 +151,7 @@ class MainView
     when /q|Q/
       close
     when /p|P/
-      @game.step
+      @controller.step
     end
   end
 
@@ -164,15 +164,21 @@ class MainView
   end
 
   def execute
+    t = Timer.new 100
+
     begin
       create_view
       until @game.game_over?
         char = getch
         input char
+        t.cyclically do
+          @controller.step
+        end
         render to_s
       end
     ensure
       close
+      puts @game.message
     end
   end
 end

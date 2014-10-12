@@ -72,3 +72,19 @@ def reduce(n)
 end
 
 $err = []
+
+class Timer
+  def initialize(cycle)
+    @cycle = cycle
+    @current = cycle
+  end
+
+  def cyclically(&p)
+    if @current == 0
+      @current = @cycle
+      p.call()
+    else
+      @current -= 1
+    end
+  end
+end

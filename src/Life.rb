@@ -12,10 +12,10 @@ class Life
     if @life > d
       @life -= d
     else
-      @last = d
       @life = 0
+      notify_dead d
     end
-    update
+    notify
   end
 
   def dead?
@@ -26,9 +26,23 @@ class Life
     @observers << observer
   end
 
-  def update
+  def notify
     @observers.each do |o|
       o.update_life
     end
+  end
+
+  def notify_dead(damage)
+    @observers.each do |o|
+      o.update_life_dead(damage)
+    end
+  end
+end
+
+module LifeObserver
+  def update_life
+  end
+
+  def update_life_dead(damage)
   end
 end

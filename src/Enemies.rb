@@ -70,9 +70,15 @@ class Enemies
     @observers << observer
   end
 
-  def update
+  def notify
     @observers.each do |o|
-      o.update_enemies
+      o.update_enemy_status(self)
+    end
+  end
+
+  def notify_destroyed(point)
+    @observers.each do |o|
+      o.update_enemy_destroyed(point)
     end
   end
 
@@ -108,7 +114,7 @@ class Enemies
     if @enemies.size < @max_amount
       @enemies << bear_enemy(rand(1..3))
     end
-    update
+    notify
   end
 
   def create_many_enemies
@@ -125,7 +131,7 @@ class Enemies
 
   def destroy(enemy)
     @enemies.delete enemy
-    update
+    notify
   end
 
   def step
@@ -147,8 +153,8 @@ class Enemies
         break
       end
     end
-    update
-    point
+    notify
+    notify_destroyed(point)
   end
 
   def each(&block)
@@ -157,5 +163,16 @@ class Enemies
 
   def update_shoot(bullet)
     process_bullet bullet
+  end
+end
+
+module EnemiesObserver
+  def update_enemy_ingression(enemy)
+  end
+
+  def update_enemy_status(enemies)
+  end
+
+  def update_enemy_destroyed(point)
   end
 end

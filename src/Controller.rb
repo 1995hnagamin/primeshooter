@@ -27,10 +27,11 @@ class MainController
     @view.execute
   end
 
-  def shoot
-  end
-
   def close
     @game.terminate
+  end
+
+  def step
+    @game.step
   end
 end

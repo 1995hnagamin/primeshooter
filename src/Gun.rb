@@ -11,7 +11,7 @@ class Gun
     if available?
       @bullet = (@bullet * 10 + n) % @mod
     end
-    update_bullet
+    update_status
   end
 
   def shoot
@@ -20,7 +20,7 @@ class Gun
       @bullet = 0
       update_shoot(b) if b > 0
     end
-    update_bullet
+    update_status
   end
 
   def maximum
@@ -33,6 +33,7 @@ class Gun
 
   def disable(turns = 2)
     @standby = turns
+    update_status
   end
 
   def available?
@@ -65,12 +66,6 @@ class Gun
     @observers << observer
   end
 
-  def update_bullet
-    @observers.each do |o|
-      o.update_bullet
-    end
-  end
-
   def update_status
     @observers.each do |o|
       o.update_status
@@ -85,8 +80,6 @@ class Gun
 end
 
 module GunObserver
-  def update_bullet
-  end
 
   def update_status
   end

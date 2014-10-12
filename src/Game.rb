@@ -1,5 +1,5 @@
 class Game
-  attr_reader :gun, :life, :enemies
+  attr_reader :gun, :life, :enemies, :score
   def initialize(env)
     @gun = Gun.new(env[:gun_width])
     @life = Life.new(env[:life], env[:life_width])
@@ -9,7 +9,9 @@ class Game
 
     @gun.register_observer @enemies
 
-    @score = 0
+    @score = Score.new @enemies
+
+    @message = Message.new @life
     @terminated = false
   end
 
@@ -23,10 +25,15 @@ class Game
   end
 
   def terminate
+    @message.add("Score: #{@score.value}")
     @terminated = true
   end
 
   def game_over?
     @life.dead? or @terminated
+  end
+
+  def message
+    @message.to_s
   end
 end
